@@ -948,37 +948,6 @@ export class VariableMovePowerAbAttr extends PreAttackAbAttr {
   }
 }
 
-export class VariableMoveTypeAbAttr extends AbAttr {
-  apply(pokemon: Pokemon, passive: boolean, cancelled: Utils.BooleanHolder, args: any[]): boolean {
-    //const power = args[0] as Utils.IntegerHolder;
-    return false;
-  }
-}
-
-export class MoveTypeChangePowerMultiplierAbAttr extends VariableMoveTypeAbAttr {
-  private matchType: Type;
-  private newType: Type;
-  private powerMultiplier: number;
-
-  constructor(matchType: Type, newType: Type, powerMultiplier: number) {
-    super(true);
-    this.matchType = matchType;
-    this.newType = newType;
-    this.powerMultiplier = powerMultiplier;
-  }
-
-  apply(pokemon: Pokemon, passive: boolean, cancelled: Utils.BooleanHolder, args: any[]): boolean {
-    const type = (args[0] as Utils.IntegerHolder);
-    if (type.value === this.matchType) {
-      type.value = this.newType;
-      (args[1] as Utils.NumberHolder).value *= this.powerMultiplier;
-      return true;
-    }
-
-    return false;
-  }
-}
-
 export class FieldPreventExplosiveMovesAbAttr extends AbAttr {
   apply(pokemon: Pokemon, passive: boolean, cancelled: Utils.BooleanHolder, args: any[]): boolean | Promise<boolean> {
     cancelled.value = true;
@@ -3774,11 +3743,11 @@ export function initAbilities() {
     new Ability(Abilities.TOUGH_CLAWS, 6)
       .attr(MovePowerBoostAbAttr, (user, target, move) => move.hasFlag(MoveFlags.MAKES_CONTACT), 1.3),
     new Ability(Abilities.PIXILATE, 6)
-      .attr(MoveTypeChangePowerMultiplierAbAttr, Type.NORMAL, Type.FAIRY, 1.2),
+      .attr(MoveTypeChangeAttr, Type.FAIRY, 1.2, (user, target, move) => move.type === Type.NORMAL),
     new Ability(Abilities.GOOEY, 6)
       .attr(PostDefendStatChangeAbAttr, (target, user, move) => move.hasFlag(MoveFlags.MAKES_CONTACT), BattleStat.SPD, -1, false),
     new Ability(Abilities.AERILATE, 6)
-      .attr(MoveTypeChangePowerMultiplierAbAttr, Type.NORMAL, Type.FLYING, 1.2),
+      .attr(MoveTypeChangeAttr, Type.FLYING, 1.2, (user, target, move) => move.type === Type.NORMAL),
     new Ability(Abilities.PARENTAL_BOND, 6)
       .unimplemented(),
     new Ability(Abilities.DARK_AURA, 6)
